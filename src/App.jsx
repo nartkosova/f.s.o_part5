@@ -5,17 +5,17 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/blogForm'
 
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [isError, setIsError] = useState(false)
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
-  const [newLikes, setNewLikes] = useState(0)
-
+  const [notification, setNotification] = useState(null);
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -44,9 +44,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setNotification('wrong username or password')
+      setIsError(true)
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }
@@ -63,10 +64,8 @@ const App = () => {
       const blogObject = {
         title: newTitle,
         author: newAuthor,
-        url: newUrl,
-        likes: newLikes,
+        url: newUrl
       }
-    
       blogService
         .create(blogObject)
         .then(returnedBlog => {
@@ -74,7 +73,11 @@ const App = () => {
           setNewTitle('')
           setNewAuthor('')
           setNewUrl('')
-          setNewLikes(0)
+          setNotification(`A new blog '${returnedBlog.title}' by ${returnedBlog.author} has been added`)
+          setIsError(false)
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000)
         })
         .catch(error => {
           setNotification('Failed to add blog')
@@ -96,14 +99,10 @@ const App = () => {
     const handleUrlChange = (event) => {
       setNewUrl(event.target.value)
     }
-  
-    const handleLikesChange = (event) => {
-      setNewLikes(event.target.value)
-    }
   if (user === null) {
     return (
       <div>
-        <Notification message={errorMessage} />
+        <Notification message={notification} isError={isError} />
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
         <div>
@@ -131,6 +130,7 @@ const App = () => {
   }
   return (
     <div>
+      <Notification message={notification} isError={isError} />
       <h2>blogs</h2>
       <p>{user.name} is logged in <button onClick={handleLogout}>logout</button></p>
       <BlogForm
@@ -140,9 +140,7 @@ const App = () => {
        newAuthor={newAuthor}
        handleAuthorChange={handleAuthorChange}
        newUrl={newUrl}
-       handleUrlChange={handleUrlChange}
-       newLikes={newLikes}
-       handleLikesChange={handleLikesChange} />
+       handleUrlChange={handleUrlChange}/>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}

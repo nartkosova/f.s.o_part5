@@ -1,7 +1,7 @@
 import React from 'react'
 
 const BlogForm = ({ addBlog, newTitle, handleTitleChange, newAuthor, handleAuthorChange, 
-    newUrl, handleUrlChange, newLikes, handleLikesChange}) => {
+    newUrl, handleUrlChange}) => {
 return (
 <form onSubmit={addBlog}>
 <div>
@@ -23,14 +23,6 @@ return (
   <input
     value={newUrl}
     onChange={handleUrlChange}
-  />
-</div>
-<div>
-  Likes:
-  <input
-    type="number"
-    value={newLikes}
-    onChange={handleLikesChange}
   />
 </div>
 <button type="submit">save</button>
