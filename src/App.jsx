@@ -13,6 +13,7 @@ const App = () => {
   const [isError, setIsError] = useState(false)
   const [notification, setNotification] = useState(null);
   const [blogVisible, setBlogVisible] = useState(false)
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -25,6 +26,9 @@ const App = () => {
       setUser(user)
       blogService.setToken(user.token)
     }
+  }, [])
+  useEffect(() => {
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -73,6 +77,25 @@ const App = () => {
         }, 5000)
       }
     }
+    const updateBlog = (updatedBlog) => {
+      setBlogs(blogs.map(blog => (blog.id !== updatedBlog.id ? blog : updatedBlog)))
+    }
+    const handleDelete = (id) => {
+      if (window.confirm(`are you sure you want to delete ${returnedBlog.title} by ${returnedBlog.author}`)){
+      blogService.remove(id).then(() => {
+        setBlogs(blogs.filter(blog => blog.id !== id))
+        setNotification('blog deleted successfully')
+        setIsError(false)
+        setTimeout(() => setNotification(null), 5000)
+      }).catch(error => {
+        console.error('failed to delete the blog:', error)
+        setNotification('failed to delete the blog')
+        setIsError(true)
+        setTimeout(() => setNotification(null), 5000)
+      })
+    }
+    }
+    const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
      const blogForm = () => {
     const hideWhenVisible = { display: blogVisible ? 'none' : '' }
     const showWhenVisible = { display: blogVisible ? '' : 'none' }
@@ -88,7 +111,6 @@ const App = () => {
       </div>
     )
   }
-
   if (user === null) {
     return (
       <div>
@@ -118,14 +140,15 @@ const App = () => {
       </div>
     )
   }   
+  
   return (
     <div>
       <Notification message={notification} isError={isError} />
       <h2>blogs</h2>
       <p>{user.name} is logged in <button onClick={handleLogout}>logout</button></p>
       {blogForm()}
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      {sortedBlogs.map(blog =>
+      <Blog key={blog.id} blog={blog} updateBlog={updateBlog} handleDelete={handleDelete} />
       )}
     </div>
   )
