@@ -80,8 +80,8 @@ const App = () => {
     const updateBlog = (updatedBlog) => {
       setBlogs(blogs.map(blog => (blog.id !== updatedBlog.id ? blog : updatedBlog)))
     }
-    const handleDelete = (id) => {
-      if (window.confirm(`are you sure you want to delete ${returnedBlog.title} by ${returnedBlog.author}`)){
+    const handleDelete = (id, title, author) => {
+      if (window.confirm(`are you sure you want to delete ${title} by ${author}`)){
       blogService.remove(id).then(() => {
         setBlogs(blogs.filter(blog => blog.id !== id))
         setNotification('blog deleted successfully')
