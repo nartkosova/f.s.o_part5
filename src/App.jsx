@@ -4,15 +4,17 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/blogForm'
+import LoginForm from './components/LoginForm'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
-  const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
   const [isError, setIsError] = useState(false)
   const [notification, setNotification] = useState(null);
   const [blogVisible, setBlogVisible] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -30,12 +32,11 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       })
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
@@ -116,28 +117,8 @@ const App = () => {
       <div>
         <Notification message={notification} isError={isError} />
         <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-        <div>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-        </form>
-      </div>
+        <LoginForm handleLogin={handleLogin} />
+      </div>  
     )
   }   
   
