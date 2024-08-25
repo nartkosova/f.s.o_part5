@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, updateBlog, handleDelete }) => {
   const [visible, setVisible] = useState(false)
@@ -12,6 +12,7 @@ const Blog = ({ blog, updateBlog, handleDelete }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
+
   const handleLike = async () => {
     const updatedBlog = {
       ...blog,
@@ -32,14 +33,14 @@ const Blog = ({ blog, updateBlog, handleDelete }) => {
 
   return (
     <div style={blogStyle}>
-      <div>
-        {blog.title} {blog.author} 
+      <div className="blog-header">
+        {blog.title} {blog.author}
         <button onClick={toggle}>
           {visible ? 'hide' : 'view'}
         </button>
       </div>
       {visible && (
-        <div>
+        <div className="blog-details">
           <p>{blog.url}</p>
           <p>{blog.likes} likes <button onClick={handleLike}>like</button></p>
           <p>{blog.user ? blog.user.name : 'Unknown user'}</p>
@@ -49,6 +50,7 @@ const Blog = ({ blog, updateBlog, handleDelete }) => {
     </div>
   )
 }
+
 Blog.propTypes = {
   blog: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -63,6 +65,7 @@ Blog.propTypes = {
     }),
   }).isRequired,
   updateBlog: PropTypes.func.isRequired,
-  handleBlog: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
 }
+
 export default Blog
